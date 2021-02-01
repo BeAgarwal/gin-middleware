@@ -30,8 +30,21 @@ func AuthenticateMiddleware(configName string) gin.HandlerFunc {
 
 // CallBackMiddleware handles the response from OAuth server and fetches user details
 func CallBackMiddleware(configName string) gin.HandlerFunc {
+	config, err := minion.GetConfigByName(appConfigs, configName)
+	if err != nil {
+		panic("undefined config called")
+	}
+	
 	return func(c *gin.Context) {
-		//	mojo for receiving callback from user
+		accessToken := c.Request.URL.Query()["access_token"][0]
+		response, err := minion.GetUserProfile(config, accessToken)
+		if err != nil {
+			panic("undefined config called")
+		}
+
+		// @todo pass c.next() into processsor function like in express-middleware
+		config.ProfileProcessor(response)
+		c.Next()
 	}
 }
 
