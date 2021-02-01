@@ -52,6 +52,9 @@ func main() {
 
 	// url to initiate login
 	app.GET("/login", uniAuth.Authenticate("server1"))
+	app.GET("/callback", uniAuth.Callback("server1"), func(context *gin.Context) {
+		context.JSON(http.StatusAccepted, gin.H{"loggedIn":true})
+	})
 
 	app.Run(":3000")
 }
